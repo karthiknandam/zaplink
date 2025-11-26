@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Link {
+  id    String    @id @default(cuid())
+  code  String @unique
+  url   String
+  count Int    @default(0)
+
+  lastClicked DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  linkStats LinkStats[]
+}
+
+// * Future modfication
+
+model LinkStats{
+  id String @id @default(cuid())
+
+  vistTime DateTime
+
+  // countries String[]
+
+  code String
+
+  userAgent String
+  
+  link Link @relation(fields: [code] , references: [code])
+}
+
+// model Devices{}
+// model countries{}
+// model Os{}
+// enum Os {
+//   MacOs,
+//   Linux,
+//   Android,
+//   Windows
+// }
