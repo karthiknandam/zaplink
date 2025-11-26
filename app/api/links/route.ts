@@ -1,6 +1,6 @@
 import { getLinks, insertUrl } from "@/lib/db/link";
 import { linkSchema } from "@/lib/validation/link.schema";
-import { checkUrlSafety } from "@/lib/validation/malvare.validation";
+import { checkUrlSafety } from "@/lib/validation/malware.validation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const data = linkSchema.safeParse(json);
 
     if (!data.success) {
-      const errs = data.error.issues.map((m) => {
+      const error = data.error.issues.map((m) => {
         return { name: m.path[0], message: m.message };
       });
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           message: "Please check the details",
-          errs,
+          error,
         },
         { status: 400 }
       );
@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
 
     // * if not malicious we can proceed with inserting into database
 
-    const createCode = await insertUrl(data.data.url);
+    const createCode = await insertUrl(data.data.url, data.data?.code);
 
-    if (!createCode.success && data === null) {
+    if (!createCode.success && createCode.data === null) {
       // * Return to frontend to create new nonse/Hash/Code d
 
       return NextResponse.json(
@@ -66,13 +66,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { data: createCode, success: true },
-      { status: 201 }
-    );
+    return NextResponse.json({ ...createCode }, { status: 201 });
   } catch (error) {
     return NextResponse.json({
       error,
+      catch: "error",
     });
   }
 }

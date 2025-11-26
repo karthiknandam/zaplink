@@ -1,6 +1,5 @@
-import { deleteLink, getLink } from "@/lib/db/link";
+import { deleteLink, findLinkStats, getLink } from "@/lib/db/link";
 import { NextRequest, NextResponse } from "next/server";
-import { success } from "zod";
 
 export async function GET(
   _req: NextRequest,
@@ -26,7 +25,14 @@ export async function GET(
       // we can redirect this to main page if not there
     }
 
-    return NextResponse.json({ data, success: true }, { status: 200 });
+    // For link stats
+
+    const linkStats = await findLinkStats(code);
+
+    return NextResponse.json(
+      { data, success: true, stats: linkStats },
+      { status: 200 }
+    );
   } catch (error) {
     console.log(error);
   }
