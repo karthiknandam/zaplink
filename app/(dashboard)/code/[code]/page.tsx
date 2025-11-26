@@ -1,8 +1,5 @@
 import { AppLineChart } from "@/components/dashboard/Chart";
 import { NavBar } from "@/components/dashboard/NavBar";
-import { useLinks } from "@/hooks/useLinks";
-import { redirect } from "next/navigation";
-
 interface Props {
   params: { code: string };
 }
