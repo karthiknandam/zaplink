@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
   try {
-    const { code } = await params; // await should be ther vs code errors are not always correct
+    const { code } = await context.params; // await should be ther vs code errors are not always correct
 
     if (code.trim() === "") {
       return NextResponse.json(
@@ -34,16 +34,19 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      { data: [], success: false, stats: [] },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
   try {
-    const { code } = await params; // await should be ther vs code errors are not always correct
+    const { code } = await context.params; // await should be ther vs code errors are not always correct
 
     if (code.trim() === "") {
       return NextResponse.json(
