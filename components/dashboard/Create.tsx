@@ -27,6 +27,7 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 
 import { addNewLink } from "@/hooks/useLinks";
 import { twMerge } from "tailwind-merge";
+import { useState } from "react";
 
 /**
  * On Progress Enum
@@ -44,6 +45,8 @@ export function Create({
   type?: "primary" | "secondary";
 }) {
   const queryClient = useQueryClient();
+
+  const [open, setOpen] = useState<boolean>(false);
 
   const form = useForm({
     defaultValues: {
@@ -83,6 +86,8 @@ export function Create({
           return;
         }
         addNewLink(resData, queryClient);
+        setOpen(false);
+        form.reset({ url: "", code: "", exipiry: Expiry });
         toast.success("Created ✅");
       } catch (error) {
         toast.error(JSON.stringify(error));
@@ -91,7 +96,7 @@ export function Create({
   });
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <form
         onSubmit={(e) => {
           e.preventDefault();

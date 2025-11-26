@@ -36,9 +36,9 @@ const Main = () => {
   const [table, setTable] = useState<boolean>(false);
 
   return (
-    <section className="w-screen h-screen flex flex-col">
+    <section className="w-screen h-full flex flex-col">
       <NavBar />
-      <div className="flex justify-between px-4 mt-4">
+      <div className="flex justify-between flex-1 px-4 mt-4">
         <div className="flex gap-2">
           <Input
             type="text"
@@ -64,7 +64,7 @@ const Main = () => {
           ) : data!.length === 0 ? (
             <EmptySection />
           ) : (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 mt-4">
               {filteredLinks?.map((link) => {
                 return <UrlCard key={link.id} data={link} />;
               })}
@@ -72,7 +72,7 @@ const Main = () => {
           )}
         </div>
       ) : (
-        <div className="px-4 mt-4 flex justify-center items-center flex-2">
+        <div className="px-4 mt-2 flex justify-center items-center flex-2">
           {/* {data && <LinksTable data={data || []} />} */}
           <div className="text-4xl font-bold">Under Construction</div>
         </div>

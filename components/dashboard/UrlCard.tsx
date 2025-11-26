@@ -184,7 +184,7 @@ export function DropdownMenuDialog({
                 const data = await deleteCode(code);
                 if (data.success) {
                   removeLink(code, queryClient);
-                  toast.success("Deleted file");
+                  toast.success("Deleted Link");
                   setShowNewDialog(false);
                   return;
                 }
