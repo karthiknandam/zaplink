@@ -40,7 +40,7 @@ import { deleteCode } from "@/lib/api";
 import { removeLink } from "@/hooks/useLinks";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
-const MAIN_URL = process.env.MAIN_URL || "localhost:3000";
+const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "localhost:3000";
 
 const UrlCard = ({ data }: { data: linkType }) => {
   const queryClient = useQueryClient();
