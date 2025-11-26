@@ -27,7 +27,8 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 
 import { addNewLink } from "@/hooks/useLinks";
 import { twMerge } from "tailwind-merge";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { Spinner } from "../ui/spinner";
 
 /**
  * On Progress Enum
@@ -47,6 +48,7 @@ export function Create({
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const form = useForm({
     defaultValues: {
@@ -71,26 +73,31 @@ export function Create({
     },
     onSubmit: async () => {
       try {
+        setIsSubmitting(true);
         const data = form.state.values;
         const response = await createCode(data);
         const { success, message, data: resData, error } = response;
 
         if (!success) {
           toast.error(message);
+          setIsSubmitting(false);
           return;
         }
 
         // Get the link and insert into the state as well;
         if (resData == undefined) {
           toast.error(JSON.stringify(error));
+          setIsSubmitting(false);
           return;
         }
         addNewLink(resData, queryClient);
         setOpen(false);
-        form.reset({ url: "", code: "", exipiry: Expiry });
+        form.reset({ url: " ", code: " ", exipiry: Expiry });
         toast.success("Created ✅");
+        setIsSubmitting(false);
       } catch (error) {
         toast.error(JSON.stringify(error));
+        setIsSubmitting(false);
       }
     },
   });
@@ -166,10 +173,6 @@ export function Create({
               validators={{
                 onDynamic: ({ value }) => {
                   const trimmed = value.trim();
-
-                  if (trimmed.length === 0) return "Code cannot be empty";
-                  if (trimmed.length < 6)
-                    return "Code must be at least 6 characters";
                   if (trimmed.length > 7)
                     return "Code must not exceed 7 characters";
 
@@ -245,7 +248,7 @@ export function Create({
               }}
               className="cursor-pointer"
             >
-              Create
+              <span>{isSubmitting ? <Spinner /> : "Create"}</span>
             </Button>
           </DialogFooter>
         </DialogContent>

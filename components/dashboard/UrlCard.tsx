@@ -9,7 +9,7 @@ import {
   MoreHorizontal,
   MousePointerClickIcon,
 } from "lucide-react";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { linkType } from "@/lib/validation/link.schema";
 
@@ -39,11 +39,22 @@ import { clearDate, timeAgo } from "@/lib/utils/date";
 import { deleteCode } from "@/lib/api";
 import { removeLink } from "@/hooks/useLinks";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { error } from "console";
+import { Spinner } from "../ui/spinner";
 
 const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
+const compactUrl = (url: string) => {
+  if (!url) return "";
+  const start = url.slice(0, 25);
+  const end = url.slice(-10);
+  return `${start}...${end}`;
+};
+
 const UrlCard = ({ data }: { data: linkType }) => {
   const queryClient = useQueryClient();
+
+  const navigation = useRouter();
   return (
     <section className="border border-b-sidebar-border rounded-md px-3 pt-3">
       <div className="border border-b-sidebar-border rounded-md p-3 flex justify-between items-center">
@@ -75,9 +86,8 @@ const UrlCard = ({ data }: { data: linkType }) => {
                 className="cursor-pointer text-primary/50 hover:text-primary"
                 onClick={async () => {
                   /**
-                   * Copie to clip board from the url
+                   * Copy to clip board from the url
                    */
-
                   await navigator.clipboard.writeText(
                     `${MAIN_URL}/${data.code}`
                   );
@@ -88,17 +98,14 @@ const UrlCard = ({ data }: { data: linkType }) => {
                 size={18}
                 className="cursor-pointer text-primary/50 hover:text-primary"
                 onClick={() => {
-                  /**
-                   * Redirect to the plac of the url
-                   */
-                  redirect(data.url);
+                  navigation.push(data.url);
                 }}
               />
             </div>
             <div className="flex">
               <CornerDownRight size={20} className="text-primary/30" />
               <p className="ml-2 text-primary/40 font-medium cursor-pointer">
-                {data.url}
+                {compactUrl(data.url)}
               </p>
             </div>
           </div>
@@ -139,6 +146,7 @@ export function DropdownMenuDialog({
   code: string | undefined;
   queryClient: QueryClient;
 }) {
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   if (code == undefined) {
     toast.error("Code not found");
     return;
@@ -181,16 +189,20 @@ export function DropdownMenuDialog({
             <Button
               type="submit"
               onClick={async () => {
+                setIsDeleting(true);
                 const data = await deleteCode(code);
-                if (data.success) {
+                if (data.data.success) {
                   removeLink(code, queryClient);
                   toast.success("Deleted Link");
                   setShowNewDialog(false);
+                  setIsDeleting(false);
                   return;
                 }
+                setIsDeleting(false);
+                console.log(data.data.error);
               }}
             >
-              Delete
+              <span>{isDeleting ? <Spinner /> : "Delete"}</span>
             </Button>
           </DialogFooter>
         </DialogContent>

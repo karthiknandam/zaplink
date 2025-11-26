@@ -104,12 +104,19 @@ export const deleteLink = async (
     /**
      * Deleting the section with id is more cheap in database cost than code
      */
+    await prisma.$transaction([
+      prisma.linkStats.deleteMany({
+        where: {
+          code: code,
+        },
+      }),
 
-    await prisma.link.delete({
-      where: {
-        id: isPresent.id,
-      },
-    });
+      prisma.link.delete({
+        where: {
+          id: isPresent.id,
+        },
+      }),
+    ]);
 
     return {
       success: true,

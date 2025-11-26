@@ -52,10 +52,11 @@ const createCode = async (
   }
 };
 
-const deleteCode = async (code: string): Promise<any> => {
+const deleteCode = async (
+  code: string
+): Promise<AxiosResponse<any, any, {}>> => {
   const response = await api.delete(`/links/${code}`);
-  console.log(response);
-  return response.data;
+  return response;
 };
 
 export { api, getAllUrls, createCode, deleteCode, getUrl };

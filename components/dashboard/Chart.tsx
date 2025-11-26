@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { start } from "repl";
 
 const chartConfig = {
   visits: {
@@ -25,7 +26,7 @@ export const AppLineChart = ({ code }: { code: string }) => {
   const [stats, setStats] = useState([]);
   const [isTrue, setIsTrue] = useState<boolean>(false);
   const theme = useTheme();
-  const navigate = useRouter();
+  const navigation = useRouter();
 
   useEffect(() => {
     const fn = async () => {
@@ -44,41 +45,59 @@ export const AppLineChart = ({ code }: { code: string }) => {
     <>
       {isTrue ? (
         <>
-          <ChartContainer config={chartConfig} className="mt-6">
-            <LineChart
-              accessibilityLayer
-              data={stats}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(5)} // mm-dd
-              />
-              <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Line
-                dataKey="visits"
-                type="monotone"
-                stroke={theme.theme === "dark" ? "#cccccc" : "#111111"}
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ChartContainer>
+          {stats.length > 0 ? (
+            <ChartContainer config={chartConfig} className="mt-6">
+              <LineChart
+                accessibilityLayer
+                data={stats}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => value.slice(5)} // mm-dd
+                />
+                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent />}
+                />
+                <Line
+                  dataKey="visits"
+                  type="monotone"
+                  stroke={theme.theme === "dark" ? "#cccccc" : "#111111"}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          ) : (
+            <div className="flex flex-col gap-3 justify-center items-center">
+              <h3 className="text-lg font-bold">No Stats Found</h3>
+              <Button
+                onClick={() => {
+                  navigation.push("/");
+                }}
+                variant={"outline"}
+                className="w-fit"
+              >
+                Back
+              </Button>
+            </div>
+          )}
         </>
       ) : (
         <div className="flex gap-2 items-center justify-center">
           <p className="font-semibold text-base">No Url found</p>
           <Button
             onClick={() => {
-              navigate.push("/");
+              navigation.push("/");
             }}
             variant={"outline"}
           >

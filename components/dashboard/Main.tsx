@@ -38,25 +38,27 @@ const Main = () => {
   return (
     <section className="w-screen h-full flex flex-col">
       <NavBar />
-      <div className="flex justify-between flex-1 px-4 mt-4">
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search by email"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input w-50"
-          />
-          <Button
-            variant={"outline"}
-            onClick={() => {
-              setTable((p) => !p);
-            }}
-          >
-            {table ? "Back" : "Table View"}
-          </Button>
+      {(data?.length ?? 0) > 0 && (
+        <div className="flex justify-between flex-1 px-4 mt-4">
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Search by email"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input w-50"
+            />
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                setTable((p) => !p);
+              }}
+            >
+              {table ? "Back" : "Table View"}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
       {!table ? (
         <div className="px-4 my-4 flex-1">
           {isPending ? (

@@ -1,5 +1,6 @@
 import { deleteLink, findLinkStats, getLink } from "@/lib/db/link";
 import { NextRequest, NextResponse } from "next/server";
+import { success } from "zod";
 
 export async function GET(
   _req: NextRequest,
@@ -72,6 +73,9 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json(
+      { error, success: false, message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
