@@ -4,10 +4,14 @@ import { generateCode } from "../utils/generateCode.ts";
 
 type returnType = { data: linkType | null; success: boolean };
 
-export const insertUrl = async (url: string): Promise<returnType> => {
+export const insertUrl = async (
+  url: string,
+  code?: string
+): Promise<returnType> => {
   try {
-    const code = generateCode();
-
+    if (!code) {
+      code = generateCode();
+    }
     const isExists = await prisma.link.findUnique({
       where: {
         code,
@@ -20,7 +24,7 @@ export const insertUrl = async (url: string): Promise<returnType> => {
 
     const link = await prisma.link.create({
       data: {
-        code: code,
+        code,
         url,
       },
     });
@@ -113,4 +117,25 @@ export const deleteLink = async (
   } catch (error) {
     throw new Error(error as string);
   }
+};
+
+export const findLinkStats = async (code: string) => {
+  const stats = await prisma.linkStats.findMany({
+    where: { code },
+    orderBy: { vistTime: "asc" },
+  });
+
+  const grouped: Record<string, number> = {};
+
+  stats.forEach((s) => {
+    const day = s.vistTime.toISOString().split("T")[0];
+    grouped[day] = (grouped[day] || 0) + 1;
+  });
+
+  const chartData = Object.entries(grouped).map(([date, count]) => ({
+    date,
+    visits: count,
+  }));
+
+  return chartData;
 };

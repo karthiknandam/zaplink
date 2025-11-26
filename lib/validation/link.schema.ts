@@ -5,7 +5,8 @@ export const linkSchema = z.object({
 
   code: z
     .string()
-    .length(7, { error: "Hash code length must be 7 Characters" })
+    .min(6, { error: "Hash code length must be 6-7 Characters" })
+    .max(7, { error: "Hash code length must be 6-7 Characters" })
     .optional(),
   url: z.string().min(1, { error: "Url is required" }),
 
