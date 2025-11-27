@@ -1,33 +1,22 @@
-import { AppLineChart } from "@/components/dashboard/Chart";
+import { AppLineChart } from "@/components/analytics/Chart";
+import CodeAnalytics from "@/components/analytics/CodeAnalytics";
 import { NavBar } from "@/components/dashboard/NavBar";
 interface Props {
   params: { code: string };
+  // searchParams: { payload?: string }; // option we can send data within the file here
 }
 const page = async ({ params }: Props) => {
   const { code } = await params;
 
-  // const router = useRouter();
+  // let extraData = null;
 
-  // const { data } = useLinks();
-  // const link = data?.find((old) => {
-  //   old.code === code;
-  // });
-
-  // if (link === undefined || null) {
-  //   // router.push("/");
-  //   redirect("/");
+  // if (searchParams.payload) {
+  //   extraData = JSON.parse(searchParams.payload);
   // }
-  // I know but i got other better approches but this is it for now well change for some other time
-
   return (
     <section className="w-full min-h-screen">
       <NavBar />
-
-      <div className="w-full max-w-3xl mx-auto px-4 mt-6">
-        <div className="w-full h-[300px] md:h-[350px] lg:h-[400px]">
-          <AppLineChart code={code} />
-        </div>
-      </div>
+      <CodeAnalytics code={code} />
     </section>
   );
 };

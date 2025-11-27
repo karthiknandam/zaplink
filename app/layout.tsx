@@ -3,6 +3,7 @@ import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SidebarSection from "@/components/dashboard/SideBarSection";
 import { Providers } from "@/components/provider";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -22,7 +23,10 @@ export default function RootLayout({
           >
             <SidebarProvider>
               <Providers>
-                <SidebarSection>{children}</SidebarSection>
+                <SidebarSection>
+                  {children}
+                  <Toaster />
+                </SidebarSection>
               </Providers>
             </SidebarProvider>
           </ThemeProvider>
