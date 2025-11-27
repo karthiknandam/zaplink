@@ -23,6 +23,7 @@ import { ThemeToggleButton } from "./ThemeSwitch";
 import { Badge } from "./badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./button";
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -82,7 +83,7 @@ export function AppSidebar() {
                     asChild
                     className="hover:bg-secondary-foreground/20"
                   >
-                    <a
+                    <Link
                       href={item.url}
                       className="flex justify-between disabled:true py-7"
                     >
@@ -95,7 +96,7 @@ export function AppSidebar() {
                       {item.soon && (
                         <Badge variant="secondary">OnProgress</Badge>
                       )}
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
