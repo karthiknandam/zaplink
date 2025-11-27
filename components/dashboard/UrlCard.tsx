@@ -58,7 +58,13 @@ const compactUrl = (url: string, isMobile: boolean) => {
   return `${start}...${end}`;
 };
 
-const UrlCard = ({ data }: { data: linkType }) => {
+const UrlCard = ({
+  data,
+  page = "urls",
+}: {
+  data: linkType;
+  page?: "analytics" | "urls";
+}) => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const navigation = useRouter();
@@ -73,9 +79,11 @@ const UrlCard = ({ data }: { data: linkType }) => {
               <Avatar>
                 <AvatarImage
                   src="https://github.com/karthiknandam.png"
-                  alt="@shadcn"
+                  alt="@karthik"
                 />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback className="inline-flex items-center justify-center">
+                  ZAP
+                </AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -85,9 +93,12 @@ const UrlCard = ({ data }: { data: linkType }) => {
             <div className="flex gap-2 items-center">
               <a
                 className="font-semibold text-base cursor-pointer"
-                href={`/code/${data.code}`}
+                // href={`/code/${data.code}?payload=${encodeURIComponent(
+                //   JSON.stringify(data)
+                // )}`}
+                href={page === "urls" ? `/code/${data.code}` : undefined}
               >
-                {isMobile ? MAIN_URL.slice(0, 9) + "..." : MAIN_URL}/{data.code}
+                {isMobile ? MAIN_URL.slice(0, 5) + "..." : MAIN_URL}/{data.code}
               </a>
               <Copy
                 size={15}
@@ -120,7 +131,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
         </div>
 
         {/* Edit and Delete */}
-        <MoreButton code={data.code} queryClient={queryClient} />
+        <MoreButton code={data.code} queryClient={queryClient} page={page} />
       </div>
 
       {/* Counter + Date */}
@@ -128,11 +139,16 @@ const UrlCard = ({ data }: { data: linkType }) => {
       <div className="flex justify-between my-3 items-center">
         <div className="flex gap-2">
           <div className="bg-background border border-sidebar-border p-1 flex gap-1 rounded-sm">
-            <MousePointerClickIcon size={18} className="text-primary/80" />
-            <span className="text-sm text-primary/90">{data.count} Clicks</span>
+            <MousePointerClickIcon
+              size={isMobile ? 16 : 18}
+              className="text-primary/80"
+            />
+            <span className="max-sm:text-xs sm:text-sm text-primary/90">
+              {data.count} Clicks
+            </span>
           </div>
           <div className="bg-background border border-sidebar-border p-1 flex gap-1 rounded-sm">
-            <span className="text-sm text-primary/90">
+            <span className="max-sm:text-xs sm:text-sm text-primary/90">
               {data.lastClicked == undefined
                 ? "No visits"
                 : timeAgo(data.lastClicked)}
@@ -140,7 +156,9 @@ const UrlCard = ({ data }: { data: linkType }) => {
           </div>
         </div>
         {data.createdAt && (
-          <p className="text-sm text-primary/40">{clearDate(data.createdAt)}</p>
+          <p className="max-sm:text-xs sm:text-sm text-primary/40">
+            {clearDate(data.createdAt)}
+          </p>
         )}
       </div>
     </section>
@@ -150,9 +168,11 @@ const UrlCard = ({ data }: { data: linkType }) => {
 export function MoreButton({
   code,
   queryClient,
+  page = "urls",
 }: {
   code: string | undefined;
   queryClient: QueryClient;
+  page?: "analytics" | "urls";
 }) {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   if (code == undefined) {
@@ -162,6 +182,7 @@ export function MoreButton({
 
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const navigation = useRouter();
 
   return (
     <>
@@ -204,6 +225,9 @@ export function MoreButton({
                   toast.success("Deleted Link");
                   setShowNewDialog(false);
                   setIsDeleting(false);
+                  if (page === "analytics") {
+                    navigation.push("/");
+                  }
                   return;
                 }
                 setIsDeleting(false);

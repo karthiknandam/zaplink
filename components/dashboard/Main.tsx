@@ -66,7 +66,7 @@ const Main = () => {
           ) : data!.length === 0 ? (
             <EmptySection />
           ) : (
-            <div className="flex flex-col gap-5 mt-4">
+            <div className="flex flex-col gap-5 mt-2">
               {filteredLinks?.map((link) => {
                 return <UrlCard key={link.id} data={link} />;
               })}

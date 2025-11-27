@@ -79,7 +79,14 @@ export function Create({
         const { success, message, data: resData, error } = response;
 
         if (!success) {
-          toast.error(message);
+          const errors: string[] = error.map((m: any) => m.message);
+          if (errors.length) {
+            errors.forEach((e) => {
+              toast.error(e);
+            });
+          } else {
+            toast.error(message);
+          }
           setIsSubmitting(false);
           return;
         }
