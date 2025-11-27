@@ -5,8 +5,9 @@ export const linkSchema = z.object({
 
   code: z
     .string()
-    .min(6, { error: "Code must be 6-7 Characters" })
-    .max(7, { error: "Cannot exceed 7 Characters" })
+    .regex(/^[A-Za-z0-9]{6,7}$/, {
+      message: "Code must be 6–7 alphanumeric characters",
+    })
     .optional(),
   url: z.url({ error: "Must be a valid url" }),
 
