@@ -103,6 +103,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      {/* User Identity should goes here soon.... */}
       <SidebarFooter className="px-4 bg-background">
         <Button
           variant={"outline"}

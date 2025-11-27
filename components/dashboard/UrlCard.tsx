@@ -6,10 +6,9 @@ import {
   Copy,
   CornerDownRight,
   ExternalLink,
-  MoreHorizontal,
   MousePointerClickIcon,
 } from "lucide-react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { linkType } from "@/lib/validation/link.schema";
 
@@ -31,7 +30,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "../ui/badge";
@@ -46,8 +44,17 @@ const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
 const compactUrl = (url: string, isMobile: boolean) => {
   if (!url) return "";
-  const start = url.slice(0, isMobile ? 10 : 20);
-  const end = url.slice(-10);
+  const clean = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+  const startLen = isMobile ? 10 : 20;
+  const endLen = 10;
+  // this would only return like github.com only short url should not be trimmed
+  if (clean.length <= startLen + endLen + 3) {
+    return clean;
+  }
+
+  const start = clean.slice(0, startLen); // forward slice
+  const end = clean.slice(-endLen); // reverse
   return `${start}...${end}`;
 };
 
@@ -80,7 +87,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
                 className="font-semibold text-base cursor-pointer"
                 href={`/code/${data.code}`}
               >
-                {MAIN_URL}/{data.code}
+                {isMobile ? MAIN_URL.slice(0, 9) + "..." : MAIN_URL}/{data.code}
               </a>
               <Copy
                 size={15}
@@ -113,7 +120,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
         </div>
 
         {/* Edit and Delete */}
-        <DropdownMenuDialog code={data.code} queryClient={queryClient} />
+        <MoreButton code={data.code} queryClient={queryClient} />
       </div>
 
       {/* Counter + Date */}
@@ -140,7 +147,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
   );
 };
 
-export function DropdownMenuDialog({
+export function MoreButton({
   code,
   queryClient,
 }: {
