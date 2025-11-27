@@ -1,0 +1,9 @@
+.vercelignore
+public/images/
+public/assets/screenshots/
+README.md
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
