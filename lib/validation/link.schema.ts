@@ -3,8 +3,12 @@ import z from "zod";
 export const linkSchema = z.object({
   id: z.string().optional(),
 
-  code: z.string().max(7, { error: "Cannot exceed 7 Characters" }).optional(),
-  url: z.string().min(1, { error: "Url is required" }),
+  code: z
+    .string()
+    .min(6, { error: "Code must be 6-7 Characters" })
+    .max(7, { error: "Cannot exceed 7 Characters" })
+    .optional(),
+  url: z.url({ error: "Must be a valid url" }),
 
   count: z.int().optional(),
 

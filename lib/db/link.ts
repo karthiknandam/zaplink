@@ -6,12 +6,9 @@ type returnType = { data: linkType | null; success: boolean };
 
 export const insertUrl = async (
   url: string,
-  code?: string
+  code: string
 ): Promise<returnType> => {
   try {
-    if (!code) {
-      code = generateCode();
-    }
     const isExists = await prisma.link.findUnique({
       where: {
         code,

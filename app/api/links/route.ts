@@ -1,4 +1,5 @@
 import { getLinks, insertUrl } from "@/lib/db/link";
+import { generateCode } from "@/lib/utils/generateCode.ts";
 import { linkSchema } from "@/lib/validation/link.schema";
 import { checkUrlSafety } from "@/lib/validation/malware.validation";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,9 +8,17 @@ export async function POST(req: NextRequest) {
   try {
     // * validation
 
-    const json = await req.json();
+    const json: { url: string; code: string } = await req.json();
 
-    const data = linkSchema.safeParse(json);
+    let code = "";
+
+    if (json.code.length > 0) {
+      code = json.code;
+    } else {
+      code = generateCode();
+    }
+
+    const data = linkSchema.safeParse({ ...json, code });
 
     if (!data.success) {
       const error = data.error.issues.map((m) => {
@@ -51,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     // * if not malicious we can proceed with inserting into database
 
-    const createCode = await insertUrl(data.data.url, data.data?.code);
+    const createCode = await insertUrl(data.data.url, code);
 
     if (!createCode.success && createCode.data === null) {
       // * Return to frontend to create new nonse/Hash/Code d

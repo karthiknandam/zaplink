@@ -22,7 +22,7 @@ export async function GET(
     const data = await getLink(code);
 
     if (!data.success) {
-      return NextResponse.json({ data, success: true }, { status: 403 });
+      return NextResponse.json({ data, success: false }, { status: 403 });
       // we can redirect this to main page if not there
     }
 

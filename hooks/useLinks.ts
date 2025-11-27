@@ -1,5 +1,5 @@
 "use client";
-import { getAllUrls } from "@/lib/api";
+import { getAllUrls, getUrl } from "@/lib/api";
 import { linkType } from "@/lib/validation/link.schema";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 
@@ -12,13 +12,34 @@ const fetchLinks = async (): Promise<linkType[] | null> => {
   }
 };
 
+const fetchUrl = async (code: string) => {
+  const res = await getUrl(code);
+  console.log(res);
+  if (!res.data.success) throw new Error("Not found");
+
+  return res.data;
+};
+
 const useLinks = (limit?: number) => {
   return useQuery({
     queryKey: ["links"],
     queryFn: async () => await fetchLinks(),
 
-    staleTime: 1000 * 60 * 1, // 1 minutes → data stays
-    gcTime: 1000 * 60 * 1, /// we can cache this for a minute
+    staleTime: 1000 * 60, // 1 minute → data stays
+    gcTime: 1000 * 60, /// we can cache this for a minute
+
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    refetchOnMount: false,
+  });
+};
+
+const useUrl = (code: string) => {
+  return useQuery({
+    queryKey: ["url", code],
+    queryFn: () => fetchUrl(code),
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60,
 
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
@@ -39,4 +60,4 @@ const removeLink = (code: string, queryClient: QueryClient) => {
   });
 };
 
-export { useLinks, fetchLinks, addNewLink, removeLink };
+export { useLinks, fetchLinks, addNewLink, removeLink, useUrl };
