@@ -43,7 +43,7 @@ const Main = () => {
           <div className="flex gap-2">
             <Input
               type="text"
-              placeholder="Search by email"
+              placeholder="search by url"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="input w-50"

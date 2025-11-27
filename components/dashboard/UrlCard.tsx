@@ -39,28 +39,29 @@ import { clearDate, timeAgo } from "@/lib/utils/date";
 import { deleteCode } from "@/lib/api";
 import { removeLink } from "@/hooks/useLinks";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import { error } from "console";
 import { Spinner } from "../ui/spinner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
-const compactUrl = (url: string) => {
+const compactUrl = (url: string, isMobile: boolean) => {
   if (!url) return "";
-  const start = url.slice(0, 25);
+  const start = url.slice(0, isMobile ? 10 : 20);
   const end = url.slice(-10);
   return `${start}...${end}`;
 };
 
 const UrlCard = ({ data }: { data: linkType }) => {
   const queryClient = useQueryClient();
-
+  const isMobile = useIsMobile();
   const navigation = useRouter();
+
   return (
     <section className="border border-b-sidebar-border rounded-md px-3 pt-3">
       <div className="border border-b-sidebar-border rounded-md p-3 flex justify-between items-center">
         <div className="flex gap-2">
           {/* logo for ex : github.com logo for now we can add custom in furture */}
-          <div className="p-3 rounded-full border border-sidebar-border inline-block">
+          <div className="p-2 rounded-full border border-sidebar-border">
             <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
               <Avatar>
                 <AvatarImage
@@ -82,7 +83,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
                 {MAIN_URL}/{data.code}
               </a>
               <Copy
-                size={17}
+                size={15}
                 className="cursor-pointer text-primary/50 hover:text-primary"
                 onClick={async () => {
                   /**
@@ -95,7 +96,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
                 }}
               />
               <ExternalLink
-                size={18}
+                size={16}
                 className="cursor-pointer text-primary/50 hover:text-primary"
                 onClick={() => {
                   navigation.push(data.url);
@@ -105,7 +106,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
             <div className="flex">
               <CornerDownRight size={20} className="text-primary/30" />
               <p className="ml-2 text-primary/40 font-medium cursor-pointer">
-                {compactUrl(data.url)}
+                {compactUrl(data.url, isMobile)}
               </p>
             </div>
           </div>
@@ -127,7 +128,7 @@ const UrlCard = ({ data }: { data: linkType }) => {
             <span className="text-sm text-primary/90">
               {data.lastClicked == undefined
                 ? "No visits"
-                : "Last visited " + timeAgo(data.lastClicked)}
+                : timeAgo(data.lastClicked)}
             </span>
           </div>
         </div>
@@ -159,7 +160,7 @@ export function DropdownMenuDialog({
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" aria-label="Open menu" size="icon-sm">
+          <Button variant="link" aria-label="Open menu" size="icon-sm">
             <MoreHorizontalIcon />
           </Button>
         </DropdownMenuTrigger>
