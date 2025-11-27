@@ -33,7 +33,7 @@ Includes dashboard, link management, redirect routing, statistics page, and a he
 
 ### Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js
 - PostgreSQL (Neon)
 - Prisma ORM
 - Tailwind CSS
