@@ -1,294 +1,245 @@
 "use client";
 
-// import * as React from "react";
-// import {
-//   ColumnDef,
-//   ColumnFiltersState,
-//   flexRender,
-//   getCoreRowModel,
-//   getFilteredRowModel,
-//   getPaginationRowModel,
-//   getSortedRowModel,
-//   SortingState,
-//   useReactTable,
-//   VisibilityState,
-// } from "@tanstack/react-table";
-// import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import * as React from "react";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { ArrowUpDown, Copy, MousePointerClickIcon } from "lucide-react";
 
-// import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
-// import { linkSchema } from "@/lib/validation/link.schema";
+import { linkType } from "@/lib/validation/link.schema";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { timeAgo } from "@/lib/utils/date";
+import { compactUrl, MoreButton } from "./UrlCard";
+import { useQueryClient } from "@tanstack/react-query";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
+import Link from "next/link";
 
-// import {
-//   DropdownMenu,
-//   DropdownMenuCheckboxItem,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import { Input } from "@/components/ui/input";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
+const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
-// const data: Payment[] = [
-//   {
-//     id: "m5gr84i9",
-//     amount: 316,
-//     status: "success",
-//     email: "ken99@example.com",
-//   },
-//   {
-//     id: "3u1reuv4",
-//     amount: 242,
-//     status: "success",
-//     email: "Abe45@example.com",
-//   },
-//   {
-//     id: "derv1ws0",
-//     amount: 837,
-//     status: "processing",
-//     email: "Monserrat44@example.com",
-//   },
-//   {
-//     id: "5kma53ae",
-//     amount: 874,
-//     status: "success",
-//     email: "Silas22@example.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@example.com",
-//   },
-// ];
+/**
+ * Pagination required for future improvement on large quantity of data retrewal
+ */
 
-// export type Payment = {
-//   id: string;
-//   amount: number;
-//   status: "pending" | "processing" | "success" | "failed";
-//   email: string;
-// };
+export const columns: ColumnDef<linkType>[] = [
+  {
+    accessorKey: "code",
+    header: "Code",
+    cell: ({ row }) => {
+      const isMobile = useIsMobile();
+      const code: string = row.getValue("code");
+      return (
+        <div className="flex gap-2 items-center">
+          <Link href={`/code/${code}`}>
+            {isMobile ? MAIN_URL.slice(0, 5) + "..." : MAIN_URL}/{code}
+          </Link>
+          <Copy
+            size={13}
+            className="cursor-pointer text-primary/50 hover:text-primary"
+            onClick={async () => {
+              /**
+               * Copy to clip board from the url
+               */
+              await navigator.clipboard.writeText(`${MAIN_URL}/${code}`);
+              toast.success("Copied to Clipboard");
+            }}
+          />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "url",
+    header: ({ column }) => {
+      return <div>Long Url</div>;
+    },
+    cell: ({ row }) => {
+      const isMobile = useIsMobile();
+      const url: string = row.getValue("url");
+      return <Link href={url}>{compactUrl(url, isMobile)}</Link>;
+    },
+  },
+  {
+    accessorKey: "count",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="cursor-pointer font-bold"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Clicks
+          <ArrowUpDown />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const isMobile = useIsMobile();
+      return (
+        <div className="bg-background border border-sidebar-border p-1 flex gap-1 rounded-sm w-fit">
+          <MousePointerClickIcon
+            size={isMobile ? 16 : 18}
+            className="text-primary/80"
+          />
+          <span className="max-sm:text-xs sm:text-sm text-primary/90">
+            {row.getValue("count")} clicks
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "lastClicked",
+    header: ({ column }) => <div className="text-right">Last Clicked</div>,
+    cell: ({ row }) => {
+      const lastClicked: Date | null = row.getValue("lastClicked");
+      let value = "";
+      if (lastClicked === null) {
+        value = "no visits yet";
+      } else {
+        value = timeAgo(lastClicked);
+      }
 
-// export const columns: ColumnDef<Payment>[] = [
-//   {
-//     accessorKey: "status",
-//     header: "Status",
-//     cell: ({ row }) => (
-//       <div className="capitalize">{row.getValue("status")}</div>
-//     ),
-//   },
-//   {
-//     accessorKey: "email",
-//     header: ({ column }) => {
-//       return (
-//         <div
-//         //   variant="ghost"
-//         //   onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-//         >
-//           Email
-//           {/* <ArrowUpDown /> */}
-//         </div>
-//       );
-//     },
-//     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-//   },
-//   {
-//     accessorKey: "amount",
-//     header: () => <div className="text-right">Amount</div>,
-//     cell: ({ row }) => {
-//       const amount = parseFloat(row.getValue("amount"));
+      return <div className="text-right font-medium">{value}</div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row, column }) => {
+      const queryClient = useQueryClient();
 
-//       // Format the amount as a dollar amount
-//       const formatted = new Intl.NumberFormat("en-US", {
-//         style: "currency",
-//         currency: "USD",
-//       }).format(amount);
+      return (
+        <MoreButton code={row.getValue("code")} queryClient={queryClient} />
+      );
+    },
+  },
+];
 
-//       return <div className="text-right font-medium">{formatted}</div>;
-//     },
-//   },
-//   {
-//     id: "actions",
-//     enableHiding: false,
-//     cell: ({ row }) => {
-//       const payment = row.original;
+export function LinksTable({ data }: { data: linkType[] }) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
-//       return (
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="ghost" className="h-8 w-8 p-0">
-//               <span className="sr-only">Open menu</span>
-//               <MoreHorizontal />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="end">
-//             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//             <DropdownMenuItem
-//               onClick={() => navigator.clipboard.writeText(payment.id)}
-//             >
-//               Copy payment ID
-//             </DropdownMenuItem>
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem>View customer</DropdownMenuItem>
-//             <DropdownMenuItem>View payment details</DropdownMenuItem>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       );
-//     },
-//   },
-// ];
+  const table = useReactTable({
+    data,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
 
-// // export const colums: ColumnDef<>;
-
-// export function DataTableDemo() {
-//   const [sorting, setSorting] = React.useState<SortingState>([]);
-//   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-//     []
-//   );
-//   const [columnVisibility, setColumnVisibility] =
-//     React.useState<VisibilityState>({});
-//   const [rowSelection, setRowSelection] = React.useState({});
-
-//   const table = useReactTable({
-//     data,
-//     columns,
-//     onSortingChange: setSorting,
-//     onColumnFiltersChange: setColumnFilters,
-//     getCoreRowModel: getCoreRowModel(),
-//     getPaginationRowModel: getPaginationRowModel(),
-//     getSortedRowModel: getSortedRowModel(),
-//     getFilteredRowModel: getFilteredRowModel(),
-//     onColumnVisibilityChange: setColumnVisibility,
-//     onRowSelectionChange: setRowSelection,
-//     state: {
-//       sorting,
-//       columnFilters,
-//       columnVisibility,
-//       rowSelection,
-//     },
-//   });
-
-//   return (
-//     <div className="w-full">
-//       <div className="flex items-center py-4">
-//         <Input
-//           placeholder="Filter emails..."
-//           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-//           onChange={(event) =>
-//             table.getColumn("email")?.setFilterValue(event.target.value)
-//           }
-//           className="max-w-sm"
-//         />
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="outline" className="ml-auto">
-//               Columns <ChevronDown />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="end">
-//             {table
-//               .getAllColumns()
-//               .filter((column) => column.getCanHide())
-//               .map((column) => {
-//                 return (
-//                   <DropdownMenuCheckboxItem
-//                     key={column.id}
-//                     className="capitalize"
-//                     checked={column.getIsVisible()}
-//                     onCheckedChange={(value) =>
-//                       column.toggleVisibility(!!value)
-//                     }
-//                   >
-//                     {column.id}
-//                   </DropdownMenuCheckboxItem>
-//                 );
-//               })}
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       </div>
-//       <div className="overflow-hidden rounded-md border">
-//         <Table>
-//           <TableHeader>
-//             {table.getHeaderGroups().map((headerGroup) => (
-//               <TableRow key={headerGroup.id}>
-//                 {headerGroup.headers.map((header) => {
-//                   return (
-//                     <TableHead key={header.id}>
-//                       {header.isPlaceholder
-//                         ? null
-//                         : flexRender(
-//                             header.column.columnDef.header,
-//                             header.getContext()
-//                           )}
-//                     </TableHead>
-//                   );
-//                 })}
-//               </TableRow>
-//             ))}
-//           </TableHeader>
-//           <TableBody>
-//             {table.getRowModel().rows?.length ? (
-//               table.getRowModel().rows.map((row) => (
-//                 <TableRow
-//                   key={row.id}
-//                   data-state={row.getIsSelected() && "selected"}
-//                 >
-//                   {row.getVisibleCells().map((cell) => (
-//                     <TableCell key={cell.id}>
-//                       {flexRender(
-//                         cell.column.columnDef.cell,
-//                         cell.getContext()
-//                       )}
-//                     </TableCell>
-//                   ))}
-//                 </TableRow>
-//               ))
-//             ) : (
-//               <TableRow>
-//                 <TableCell
-//                   colSpan={columns.length}
-//                   className="h-24 text-center"
-//                 >
-//                   No results.
-//                 </TableCell>
-//               </TableRow>
-//             )}
-//           </TableBody>
-//         </Table>
-//       </div>
-//       <div className="flex items-center justify-end space-x-2 py-4">
-//         <div className="text-muted-foreground flex-1 text-sm">
-//           {table.getFilteredSelectedRowModel().rows.length} of{" "}
-//           {table.getFilteredRowModel().rows.length} row(s) selected.
-//         </div>
-//         <div className="space-x-2">
-//           <Button
-//             variant="outline"
-//             size="sm"
-//             onClick={() => table.previousPage()}
-//             disabled={!table.getCanPreviousPage()}
-//           >
-//             Previous
-//           </Button>
-//           <Button
-//             variant="outline"
-//             size="sm"
-//             onClick={() => table.nextPage()}
-//             disabled={!table.getCanNextPage()}
-//           >
-//             Next
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+  return (
+    <div className="w-full">
+      <div className="overflow-hidden rounded-md border mt-4">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} className="font-bold">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        {/* <div className="text-muted-foreground flex-1 text-sm">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div> */}
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -3,7 +3,12 @@ import { useLinks } from "@/hooks/useLinks";
 import { Create } from "./Create";
 import { Skeleton } from "../ui/skeleton";
 
-import { ArrowUpRightIcon, FolderOpenIcon } from "lucide-react";
+import {
+  ArrowUpRightIcon,
+  CreditCard,
+  FolderOpenIcon,
+  Table2Icon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +23,7 @@ import UrlCard from "./UrlCard";
 import { useMemo, useState } from "react";
 import { Input } from "../ui/input";
 import { NavBar } from "./NavBar";
+import { LinksTable } from "./UrlTable";
 
 const Main = () => {
   const { data, isPending } = useLinks();
@@ -36,10 +42,10 @@ const Main = () => {
   const [table, setTable] = useState<boolean>(false);
 
   return (
-    <section className="w-screen h-full flex flex-col">
+    <section className="w-full h-full flex flex-col overflow-hidden mb-4">
       <NavBar />
       {(data?.length ?? 0) > 0 && (
-        <div className="flex justify-between flex-1 px-4 mt-4">
+        <div className="flex justify-between flex-1 px-4 mt-24">
           <div className="flex gap-2">
             <Input
               type="text"
@@ -50,23 +56,34 @@ const Main = () => {
             />
             <Button
               variant={"outline"}
+              className="cursor-pointer"
               onClick={() => {
                 setTable((p) => !p);
               }}
             >
-              {table ? "Back" : "Table View"}
+              <span className="flex gap-2 items-center">
+                {table ? (
+                  <>
+                    <CreditCard /> {" Cards View"}
+                  </>
+                ) : (
+                  <>
+                    <Table2Icon /> {" Table View"}
+                  </>
+                )}
+              </span>
             </Button>
           </div>
         </div>
       )}
       {!table ? (
-        <div className="px-4 my-4 flex-1">
+        <div className="px-4 flex-1">
           {isPending ? (
             <Skelitons />
           ) : data!.length === 0 ? (
             <EmptySection />
           ) : (
-            <div className="flex flex-col gap-5 mt-2">
+            <div className="flex flex-col gap-5 mt-4">
               {filteredLinks?.map((link) => {
                 return <UrlCard key={link.id} data={link} />;
               })}
@@ -74,9 +91,8 @@ const Main = () => {
           )}
         </div>
       ) : (
-        <div className="px-4 mt-2 flex justify-center items-center flex-2">
-          {/* {data && <LinksTable data={data || []} />} */}
-          <div className="text-4xl font-bold">Under Construction</div>
+        <div className="px-4 mt-2">
+          <LinksTable data={filteredLinks} />
         </div>
       )}
     </section>
@@ -85,7 +101,11 @@ const Main = () => {
 
 const Skelitons = () => {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 mt-24">
+      <div className="flex gap-3">
+        <Skeleton className="h-9 w-[200px] rounded-md" />
+        <Skeleton className="h-9 w-[125px] rounded-md" />
+      </div>
       <Skeleton className="h-[105px] w-full rounded-xl" />
       <Skeleton className="h-[105px] w-full rounded-xl" />
       <Skeleton className="h-[105px] w-full rounded-xl" />
@@ -97,7 +117,7 @@ const Skelitons = () => {
 
 export function EmptySection() {
   return (
-    <Empty className="w-full h-full flex items-center justify-center">
+    <Empty className="w-full h-full flex items-center justify-center mt-24">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <FolderOpenIcon />

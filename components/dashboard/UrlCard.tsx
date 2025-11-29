@@ -42,7 +42,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
-const compactUrl = (url: string, isMobile: boolean) => {
+export const compactUrl = (url: string, isMobile: boolean) => {
   if (!url) return "";
   const clean = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
@@ -74,7 +74,7 @@ const UrlCard = ({
       <div className="border border-b-sidebar-border rounded-md p-3 flex justify-between items-center">
         <div className="flex gap-2">
           {/* logo for ex : github.com logo for now we can add custom in furture */}
-          <div className="p-2 rounded-full border border-sidebar-border">
+          <div className="max-sm:my-auto max-sm:mr-1 max-sm:border-0 sm:p-2 rounded-full border border-sidebar-border">
             <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
               <Avatar>
                 <AvatarImage
@@ -188,7 +188,12 @@ export function MoreButton({
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="link" aria-label="Open menu" size="icon-sm">
+          <Button
+            variant="link"
+            aria-label="Open menu"
+            size="icon-sm"
+            className="cursor-pointer"
+          >
             <MoreHorizontalIcon />
           </Button>
         </DropdownMenuTrigger>
