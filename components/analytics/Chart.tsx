@@ -35,7 +35,11 @@ export const AppLineChart = ({ stats }: { stats: stats[] }) => {
       {stats.length > 0 ? (
         <div>
           {mounted ? (
-            <ChartContainer config={chartConfig} className="mt-6">
+            <ChartContainer
+              config={chartConfig}
+              className="mt-6"
+              suppressHydrationWarning
+            >
               <LineChart
                 accessibilityLayer
                 data={stats}
