@@ -1,6 +1,6 @@
 import { prisma } from "../db";
 import { linkType } from "../validation/link.schema";
-import { generateCode } from "../utils/generateCode.ts";
+import { getIcon } from "../utils/common";
 
 type returnType = { data: linkType | null; success: boolean };
 
@@ -19,10 +19,13 @@ export const insertUrl = async (
       return { success: false, data: null }; // return to the frontend with the error code and get new code
     }
 
+    const icon = getIcon(url);
+
     const link = await prisma.link.create({
       data: {
         code,
         url,
+        icon,
       },
     });
 

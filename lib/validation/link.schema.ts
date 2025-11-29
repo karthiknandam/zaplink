@@ -12,6 +12,7 @@ export const linkSchema = z.object({
   url: z.url({ error: "Must be a valid url" }),
 
   count: z.int().optional(),
+  icon: z.url().optional(),
 
   lastClicked: z.date().optional(),
   createdAt: z.date().optional(),
