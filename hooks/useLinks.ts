@@ -14,7 +14,6 @@ const fetchLinks = async (): Promise<linkType[] | null> => {
 
 const fetchUrl = async (code: string) => {
   const res = await getUrl(code);
-  console.log(res);
   if (!res.data.success) throw new Error("Not found");
 
   return res.data;

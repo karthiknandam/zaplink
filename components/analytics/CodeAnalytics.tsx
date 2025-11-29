@@ -14,7 +14,7 @@ const CodeAnalytics = ({ code }: { code: string }) => {
   const { data, isPending, isError } = useUrl(code);
 
   return (
-    <div className="w-full mx-auto px-4 mt-4">
+    <div className="w-full mx-auto px-4 mt-24">
       {isPending ? (
         /**
          * Skelitons

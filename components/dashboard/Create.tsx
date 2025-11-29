@@ -78,6 +78,11 @@ export function Create({
         const response = await createCode(data);
         const { success, message, data: resData, error } = response;
 
+        if (!navigator.onLine) {
+          toast.error("You're offline!");
+          return;
+        }
+
         if (!success) {
           const errors: string[] = error.map((m: any) => m.message);
           if (errors.length) {
