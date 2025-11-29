@@ -32,6 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 
@@ -42,14 +43,26 @@ const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || "zaaaplink.vercel.app";
 export const columns: ColumnDef<linkType>[] = [
   {
     accessorKey: "code",
-    header: "Code",
+    header: "Short Url",
     cell: ({ row }) => {
       const isMobile = useIsMobile();
       const code: string = row.getValue("code");
+      const icon: string =
+        row.original.icon || "https://github.com/karthiknandam.png";
       return (
         <div className="flex gap-2 items-center">
-          <Link href={`/code/${code}`}>
-            {isMobile ? MAIN_URL.slice(0, 5) + "..." : MAIN_URL}/{code}
+          <Link href={`/code/${code}`} className="flex gap-1 items-center">
+            <div className="rounded-full justify-center items-center">
+              <Avatar className="p-1.5">
+                <AvatarImage src={icon} alt="@zap" className="rounded-full" />
+                <AvatarFallback className="inline-flex items-center justify-center">
+                  ZAP
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <span>
+              {isMobile ? MAIN_URL.slice(0, 5) + "..." : MAIN_URL}/{code}
+            </span>
           </Link>
           <Copy
             size={13}

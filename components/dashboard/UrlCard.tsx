@@ -75,11 +75,12 @@ const UrlCard = ({
         <div className="flex gap-2">
           {/* logo for ex : github.com logo for now we can add custom in furture */}
           <div className="max-sm:my-auto max-sm:mr-1 max-sm:border-0 sm:p-2 rounded-full border border-sidebar-border">
-            <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+            <div className="max-sm:rounded-full">
               <Avatar>
                 <AvatarImage
-                  src="https://github.com/karthiknandam.png"
-                  alt="@karthik"
+                  className="max-sm:p-1 max-sm:border max-sm:rounded-full"
+                  src={data.icon || "https://github.com/karthiknandam.png"}
+                  alt="@zap"
                 />
                 <AvatarFallback className="inline-flex items-center justify-center">
                   ZAP
