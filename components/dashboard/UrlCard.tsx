@@ -67,7 +67,7 @@ const UrlCard = ({
 }) => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
-  const navigation = useRouter();
+  const router = useRouter();
 
   return (
     <section className="border border-b-sidebar-border rounded-md px-3 pt-3">
@@ -118,7 +118,7 @@ const UrlCard = ({
                 size={16}
                 className="cursor-pointer text-primary/50 hover:text-primary"
                 onClick={() => {
-                  navigation.push(data.url);
+                  router.push(data.url);
                 }}
               />
             </div>
@@ -183,7 +183,7 @@ export function MoreButton({
 
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const navigation = useRouter();
+  const router = useRouter();
 
   return (
     <>
@@ -232,7 +232,11 @@ export function MoreButton({
                   setShowNewDialog(false);
                   setIsDeleting(false);
                   if (page === "analytics") {
-                    navigation.push("/");
+                    router.back();
+                    // if there is not back navigation we can push it;
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 300);
                   }
                   return;
                 }

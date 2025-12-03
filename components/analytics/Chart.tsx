@@ -24,7 +24,7 @@ type stats = { date: string; visits: number };
 export const AppLineChart = ({ stats }: { stats: stats[] }) => {
   const [mounted, setMounted] = useState(false);
   const theme = useTheme();
-  const navigation = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -79,7 +79,11 @@ export const AppLineChart = ({ stats }: { stats: stats[] }) => {
           <h3 className="text-lg font-bold">No Analytics found</h3>
           <Button
             onClick={() => {
-              navigation.push("/");
+              router.back();
+
+              setTimeout(() => {
+                router.push("/");
+              }, 100);
             }}
             variant={"outline"}
             className="w-fit"

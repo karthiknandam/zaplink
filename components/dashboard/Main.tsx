@@ -20,14 +20,19 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import UrlCard from "./UrlCard";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { NavBar } from "./NavBar";
 import { LinksTable } from "./UrlTable";
+import { AnimatePresence, motion } from "motion/react";
 
 const Main = () => {
   const { data, isPending } = useLinks();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string>("");
+  const [table, setTable] = useState<boolean>(false);
+
+  // prevent double restore in strict mode
+  const restored = useRef(false);
 
   const filteredLinks = useMemo(() => {
     if (!data) return [];
@@ -39,7 +44,20 @@ const Main = () => {
     );
   }, [data, search]);
 
-  const [table, setTable] = useState<boolean>(false);
+  useEffect(() => {
+    if (!restored.current) {
+      restored.current = true;
+
+      const state = window.history.state;
+      if (state?.table !== undefined) {
+        setTable(state.table);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    window.history.replaceState({ ...window.history.state, table }, "");
+  }, [table]);
 
   return (
     <section className="w-full h-full flex flex-col overflow-hidden mb-4">
@@ -77,16 +95,38 @@ const Main = () => {
         </div>
       )}
       {!table ? (
-        <div className="px-4 flex-1">
+        <div className="px-4 flex-1 mb-4">
           {isPending ? (
             <Skelitons />
           ) : data!.length === 0 ? (
             <EmptySection />
           ) : (
             <div className="flex flex-col gap-5 mt-4">
-              {filteredLinks?.map((link) => {
-                return <UrlCard key={link.id} data={link} />;
-              })}
+              <AnimatePresence>
+                {filteredLinks?.map((link, i) => {
+                  return (
+                    <motion.div
+                      key={link.id}
+                      initial={{
+                        y: 7,
+                        opacity: 0,
+                        filter: "blur(10px)",
+                      }}
+                      animate={{
+                        opacity: 1,
+                        filter: "blur(0px)",
+                      }}
+                      exit={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
+                      transition={{
+                        ease: "easeInOut",
+                        duration: 0.2 * i + 1,
+                      }}
+                    >
+                      <UrlCard data={link} />
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           )}
         </div>
