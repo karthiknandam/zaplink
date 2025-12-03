@@ -27,7 +27,7 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 
 import { addNewLink } from "@/hooks/useLinks";
 import { twMerge } from "tailwind-merge";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { Spinner } from "../ui/spinner";
 
 /**
@@ -84,6 +84,11 @@ export function Create({
         }
 
         if (!success) {
+          if (error === "conflict") {
+            toast.error(message);
+            setIsSubmitting(false);
+            return;
+          }
           const errors: string[] = error.map((m: any) => m.message);
           if (errors.length) {
             errors.forEach((e) => {

@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           message: "Code already exists",
-          error: "code",
+          error: "conflict",
         },
         { status: 409 }
       );
